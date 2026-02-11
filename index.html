@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,24 +11,36 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
+
 <body>
     <div class="container">
         <header class="header">
-            <h1 class="title">
-                <span class="title-icon">✓</span>
-                My Tasks
-            </h1>
-            <p class="subtitle">Stay organized, stay productive</p>
+            <div class="header-top">
+                <div class="header-title-group">
+                    <h1 class="title">
+                        <span class="title-icon">✓</span>
+                        My Tasks
+                    </h1>
+                    <p class="subtitle">Stay organized, stay productive</p>
+                </div>
+                <button id="themeToggle" class="theme-toggle" aria-label="Toggle theme">
+                    <span class="theme-icon">🌙</span>
+                </button>
+            </div>
+            <div class="search-section">
+                <input type="text" id="searchInput" class="search-input" placeholder="Search tasks..."
+                    autocomplete="off">
+            </div>
         </header>
 
         <div class="input-section">
-            <input 
-                type="text" 
-                id="taskInput" 
-                class="task-input" 
-                placeholder="What needs to be done?"
-                autocomplete="off"
-            >
+            <select id="prioritySelect" class="priority-select">
+                <option value="low">Low</option>
+                <option value="medium" selected>Medium</option>
+                <option value="high">High</option>
+            </select>
+            <input type="text" id="taskInput" class="task-input" placeholder="What needs to be done?"
+                autocomplete="off">
             <button id="addBtn" class="add-btn">
                 <span class="btn-text">Add Task</span>
                 <span class="btn-icon">+</span>
@@ -49,6 +62,12 @@
             </div>
         </div>
 
+        <div class="filters">
+            <button class="filter-btn active" data-filter="all">All</button>
+            <button class="filter-btn" data-filter="active">Active</button>
+            <button class="filter-btn" data-filter="completed">Completed</button>
+        </div>
+
         <ul id="taskList" class="task-list"></ul>
 
         <div class="empty-state" id="emptyState">
@@ -59,4 +78,5 @@
 
     <script src="app.js"></script>
 </body>
+
 </html>
