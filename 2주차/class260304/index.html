@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TODO</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #f5f6fa;
+      min-height: 100vh;
+    }
+
+    /* ── Layout ── */
+    .layout {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      width: 220px;
+      background: #1e1e2e;
+      color: #cdd6f4;
+      display: flex;
+      flex-direction: column;
+      padding: 24px 0;
+      flex-shrink: 0;
+    }
+
+    .sidebar-logo {
+      font-size: 20px;
+      font-weight: 700;
+      color: #cba6f7;
+      padding: 0 20px 24px;
+      border-bottom: 1px solid #313244;
+    }
+
+    .nav-section {
+      padding: 16px 0;
+      border-bottom: 1px solid #313244;
+    }
+
+    .nav-label {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #6c7086;
+      padding: 0 20px 8px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 20px;
+      cursor: pointer;
+      font-size: 14px;
+      color: #cdd6f4;
+      transition: background 0.15s;
+      border-left: 3px solid transparent;
+    }
+
+    .nav-item:hover { background: #2a2a3e; }
+    .nav-item.active {
+      background: #2a2a3e;
+      border-left-color: #cba6f7;
+      color: #cba6f7;
+    }
+
+    .nav-item .icon { font-size: 16px; width: 20px; text-align: center; }
+
+    /* date list in sidebar */
+    .date-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 0;
+    }
+
+    .date-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 20px;
+      cursor: pointer;
+      font-size: 13px;
+      color: #a6adc8;
+      transition: background 0.15s;
+      border-left: 3px solid transparent;
+    }
+
+    .date-item:hover { background: #2a2a3e; }
+    .date-item.active {
+      background: #2a2a3e;
+      border-left-color: #89dceb;
+      color: #89dceb;
+    }
+
+    .date-item .badge {
+      background: #313244;
+      color: #a6adc8;
+      font-size: 11px;
+      border-radius: 10px;
+      padding: 1px 7px;
+      min-width: 22px;
+      text-align: center;
+    }
+
+    .date-item.active .badge { background: #1e1e2e; color: #89dceb; }
+
+    /* ── Main ── */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* ── Top bar ── */
+    .topbar {
+      background: white;
+      border-bottom: 1px solid #e8eaed;
+      padding: 16px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .topbar-left { display: flex; align-items: center; gap: 12px; }
+
+    .page-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: #1e1e2e;
+    }
+
+    .date-nav {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .date-nav button {
+      background: #f5f6fa;
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+      width: 30px; height: 30px;
+      cursor: pointer;
+      font-size: 14px;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .date-nav button:hover { background: #e8eaed; }
+
+    .date-nav input[type="date"] {
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 14px;
+      color: #1e1e2e;
+      cursor: pointer;
+      background: #f5f6fa;
+    }
+
+    /* ── Content ── */
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 28px;
+    }
+
+    /* ── Add row ── */
+    .add-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    .add-row input {
+      flex: 1;
+      padding: 11px 16px;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 15px;
+      background: white;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .add-row input:focus { border-color: #cba6f7; }
+
+    .add-row button {
+      padding: 11px 20px;
+      background: #cba6f7;
+      color: #1e1e2e;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.15s;
+    }
+
+    .add-row button:hover { background: #b894e8; }
+
+    /* ── Section headers ── */
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-size: 13px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #6c7086;
+    }
+
+    .section-count {
+      font-size: 12px;
+      color: #a6adc8;
+    }
+
+    /* ── Todo list ── */
+    .todo-list { margin-bottom: 32px; }
+
+    .todo-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: white;
+      border: 1px solid #e8eaed;
+      border-radius: 8px;
+      padding: 12px 14px;
+      margin-bottom: 8px;
+      transition: border-color 0.15s, opacity 0.15s;
+    }
+
+    .todo-item:hover { border-color: #cba6f7; }
+    .todo-item.done { opacity: 0.6; }
+
+    .todo-check {
+      width: 20px; height: 20px;
+      border: 2px solid #cba6f7;
+      border-radius: 50%;
+      cursor: pointer;
+      flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.15s;
+    }
+
+    .todo-check.checked {
+      background: #cba6f7;
+    }
+
+    .todo-check.checked::after {
+      content: '✓';
+      font-size: 11px;
+      color: #1e1e2e;
+      font-weight: 700;
+    }
+
+    .todo-text {
+      flex: 1;
+      font-size: 15px;
+      color: #1e1e2e;
+      line-height: 1.4;
+    }
+
+    .todo-item.done .todo-text {
+      text-decoration: line-through;
+      color: #a6adc8;
+    }
+
+    .todo-actions { display: flex; gap: 4px; opacity: 0; transition: opacity 0.15s; }
+    .todo-item:hover .todo-actions { opacity: 1; }
+
+    .action-btn {
+      background: none;
+      border: none;
+      padding: 4px 6px;
+      cursor: pointer;
+      border-radius: 4px;
+      font-size: 14px;
+      color: #a6adc8;
+      transition: color 0.15s, background 0.15s;
+    }
+
+    .action-btn:hover { background: #f5f6fa; color: #ff6b6b; }
+    .action-btn.archive-btn:hover { color: #89dceb; }
+
+    /* ── Empty state ── */
+    .empty {
+      text-align: center;
+      padding: 40px 0;
+      color: #a6adc8;
+      font-size: 14px;
+    }
+
+    .empty-icon { font-size: 36px; margin-bottom: 10px; }
+
+    /* ── Archive page ── */
+    .archive-day {
+      margin-bottom: 28px;
+    }
+
+    .archive-day-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .archive-day-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #1e1e2e;
+    }
+
+    .archive-day-count {
+      font-size: 12px;
+      color: #a6adc8;
+      background: #e8eaed;
+      border-radius: 10px;
+      padding: 1px 8px;
+    }
+
+    .archive-toggle {
+      margin-left: auto;
+      font-size: 12px;
+      color: #a6adc8;
+    }
+
+    .archive-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: white;
+      border: 1px solid #e8eaed;
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-bottom: 6px;
+    }
+
+    .archive-icon { font-size: 14px; color: #a6e3a1; }
+
+    .archive-item-text {
+      flex: 1;
+      font-size: 14px;
+      color: #6c7086;
+      text-decoration: line-through;
+    }
+
+    .archive-item-date {
+      font-size: 11px;
+      color: #bac2de;
+    }
+
+    .restore-btn {
+      background: none;
+      border: none;
+      padding: 4px 6px;
+      cursor: pointer;
+      border-radius: 4px;
+      font-size: 12px;
+      color: #a6adc8;
+      opacity: 0;
+      transition: opacity 0.15s, color 0.15s;
+    }
+
+    .archive-item:hover .restore-btn { opacity: 1; }
+    .restore-btn:hover { color: #cba6f7; }
+
+    /* clear archive btn */
+    .clear-btn {
+      background: none;
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+      padding: 5px 12px;
+      font-size: 12px;
+      color: #a6adc8;
+      cursor: pointer;
+      transition: color 0.15s, border-color 0.15s;
+    }
+
+    .clear-btn:hover { color: #ff6b6b; border-color: #ff6b6b; }
+
+    /* ── Responsive ── */
+    @media (max-width: 600px) {
+      .sidebar { width: 60px; }
+      .sidebar-logo, .nav-label, .nav-item span, .date-list { display: none; }
+      .nav-item { justify-content: center; padding: 12px; }
+      .content { padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="layout">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">✅ TODO</div>
+
+    <div class="nav-section">
+      <div class="nav-label">메뉴</div>
+      <div class="nav-item active" onclick="showPage('today')" id="nav-today">
+        <span class="icon">📅</span><span>오늘</span>
+      </div>
+      <div class="nav-item" onclick="showPage('daily')" id="nav-daily">
+        <span class="icon">📋</span><span>날짜별</span>
+      </div>
+      <div class="nav-item" onclick="showPage('archive')" id="nav-archive">
+        <span class="icon">🗄️</span><span>아카이브</span>
+      </div>
+    </div>
+
+    <div class="nav-label" style="padding-top:16px;">최근 날짜</div>
+    <div class="date-list" id="dateList"></div>
+  </aside>
+
+  <!-- Main -->
+  <div class="main">
+    <div class="topbar">
+      <div class="topbar-left">
+        <div class="page-title" id="pageTitle">오늘</div>
+        <div class="date-nav" id="dateNav">
+          <button onclick="shiftDate(-1)">‹</button>
+          <input type="date" id="datePicker" onchange="onDatePick(this.value)">
+          <button onclick="shiftDate(1)">›</button>
+        </div>
+      </div>
+      <div id="topbarRight"></div>
+    </div>
+
+    <div class="content" id="content"></div>
+  </div>
+</div>
+
+<script>
+  // ── State ──────────────────────────────────────────────
+  let state = {
+    todos: JSON.parse(localStorage.getItem('todos') || '[]'),
+    archive: JSON.parse(localStorage.getItem('archive') || '[]'),
+    currentDate: todayStr(),
+    page: 'today'   // 'today' | 'daily' | 'archive'
+  };
+
+  function todayStr() {
+    return new Date().toISOString().slice(0, 10);
+  }
+
+  function save() {
+    localStorage.setItem('todos', JSON.stringify(state.todos));
+    localStorage.setItem('archive', JSON.stringify(state.archive));
+  }
+
+  // ── Navigation ─────────────────────────────────────────
+  function showPage(page) {
+    state.page = page;
+    ['today','daily','archive'].forEach(p => {
+      document.getElementById('nav-' + p).classList.toggle('active', p === page);
+    });
+
+    const dateNav = document.getElementById('dateNav');
+    const titles = { today: '오늘', daily: '날짜별 보기', archive: '완료 아카이브' };
+    document.getElementById('pageTitle').textContent = titles[page];
+    dateNav.style.display = page === 'daily' ? 'flex' : 'none';
+
+    if (page === 'today') {
+      state.currentDate = todayStr();
+    }
+    render();
+  }
+
+  function onDatePick(val) {
+    state.currentDate = val;
+    render();
+  }
+
+  function shiftDate(delta) {
+    const d = new Date(state.currentDate);
+    d.setDate(d.getDate() + delta);
+    state.currentDate = d.toISOString().slice(0, 10);
+    document.getElementById('datePicker').value = state.currentDate;
+    render();
+  }
+
+  // ── CRUD ───────────────────────────────────────────────
+  function addTodo(date) {
+    const input = document.getElementById('todoInput');
+    const text = input.value.trim();
+    if (!text) return;
+    state.todos.push({ id: Date.now(), text, date, done: false });
+    input.value = '';
+    save();
+    renderSidebar();
+    renderContent();
+  }
+
+  function toggleTodo(id) {
+    const todo = state.todos.find(t => t.id === id);
+    if (!todo) return;
+    todo.done = !todo.done;
+    save();
+    renderContent();
+  }
+
+  function deleteTodo(id) {
+    state.todos = state.todos.filter(t => t.id !== id);
+    save();
+    renderSidebar();
+    renderContent();
+  }
+
+  function archiveDone(date) {
+    const done = state.todos.filter(t => t.date === date && t.done);
+    if (!done.length) return;
+    done.forEach(t => state.archive.push({ ...t, archivedAt: Date.now() }));
+    state.todos = state.todos.filter(t => !(t.date === date && t.done));
+    save();
+    renderSidebar();
+    renderContent();
+  }
+
+  function restoreArchive(id) {
+    const item = state.archive.find(a => a.id === id);
+    if (!item) return;
+    state.todos.push({ id: Date.now(), text: item.text, date: item.date, done: false });
+    state.archive = state.archive.filter(a => a.id !== id);
+    save();
+    renderSidebar();
+    renderContent();
+  }
+
+  function deleteArchive(id) {
+    state.archive = state.archive.filter(a => a.id !== id);
+    save();
+    renderContent();
+  }
+
+  function clearArchive() {
+    if (!confirm('아카이브를 모두 삭제할까요?')) return;
+    state.archive = [];
+    save();
+    renderContent();
+  }
+
+  // ── Render helpers ──────────────────────────────────────
+  function fmtDate(str) {
+    const d = new Date(str + 'T00:00:00');
+    const days = ['일','월','화','수','목','금','토'];
+    return `${str.replace(/-/g,'.')} (${days[d.getDay()]})`;
+  }
+
+  function esc(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function todoItemHTML(t) {
+    return `
+      <div class="todo-item ${t.done ? 'done' : ''}" id="todo-${t.id}">
+        <div class="todo-check ${t.done ? 'checked' : ''}" onclick="toggleTodo(${t.id})"></div>
+        <div class="todo-text">${esc(t.text)}</div>
+        <div class="todo-actions">
+          <button class="action-btn archive-btn" title="아카이브로 이동" onclick="archiveSingle(${t.id})">🗄</button>
+          <button class="action-btn" title="삭제" onclick="deleteTodo(${t.id})">✕</button>
+        </div>
+      </div>`;
+  }
+
+  function archiveSingle(id) {
+    const todo = state.todos.find(t => t.id === id);
+    if (!todo) return;
+    todo.done = true;
+    state.archive.push({ ...todo, archivedAt: Date.now() });
+    state.todos = state.todos.filter(t => t.id !== id);
+    save();
+    renderSidebar();
+    renderContent();
+  }
+
+  function dayPanelHTML(date, showArchiveBtn) {
+    const todos = state.todos.filter(t => t.date === date);
+    const pending = todos.filter(t => !t.done);
+    const done = todos.filter(t => t.done);
+
+    const archiveBtn = done.length
+      ? `<button class="clear-btn" onclick="archiveDone('${date}')">완료 ${done.length}개 아카이브</button>`
+      : '';
+
+    const pendingHTML = pending.length
+      ? pending.map(todoItemHTML).join('')
+      : `<div class="empty"><div class="empty-icon">✨</div>미완료 항목이 없습니다</div>`;
+
+    const doneHTML = done.length
+      ? `<div class="section-header" style="margin-top:20px;">
+           <span class="section-title">완료</span>
+           <span class="section-count">${done.length}개 ${archiveBtn}</span>
+         </div>
+         ${done.map(todoItemHTML).join('')}` : '';
+
+    return `
+      <div class="section-header">
+        <span class="section-title">할 일 · ${pending.length}개 남음</span>
+      </div>
+      ${pendingHTML}
+      ${doneHTML}`;
+  }
+
+  // ── Render content ──────────────────────────────────────
+  function renderContent() {
+    const el = document.getElementById('content');
+    const { page, currentDate } = state;
+
+    if (page === 'today' || page === 'daily') {
+      const date = currentDate;
+      el.innerHTML = `
+        <div class="add-row">
+          <input id="todoInput" type="text" placeholder="할 일을 입력하세요..." />
+          <button onclick="addTodo('${date}')">+ 추가</button>
+        </div>
+        ${dayPanelHTML(date, true)}`;
+      const input = document.getElementById('todoInput');
+      input.addEventListener('keydown', e => { if (e.key === 'Enter') addTodo(date); });
+      input.focus();
+      return;
+    }
+
+    if (page === 'archive') {
+      const archive = [...state.archive].sort((a, b) => b.archivedAt - a.archivedAt);
+      if (!archive.length) {
+        el.innerHTML = `<div class="empty"><div class="empty-icon">🗄️</div>아카이브가 비어 있습니다</div>`;
+        return;
+      }
+
+      // group by original date
+      const byDate = {};
+      archive.forEach(a => {
+        if (!byDate[a.date]) byDate[a.date] = [];
+        byDate[a.date].push(a);
+      });
+
+      const dates = Object.keys(byDate).sort((a, b) => b.localeCompare(a));
+
+      const html = `
+        <div class="section-header">
+          <span class="section-title">완료된 항목 · ${archive.length}개</span>
+          <button class="clear-btn" onclick="clearArchive()">전체 삭제</button>
+        </div>
+        ${dates.map(d => `
+          <div class="archive-day">
+            <div class="archive-day-header">
+              <span class="archive-day-title">${fmtDate(d)}</span>
+              <span class="archive-day-count">${byDate[d].length}개</span>
+            </div>
+            ${byDate[d].map(a => `
+              <div class="archive-item">
+                <span class="archive-icon">✓</span>
+                <span class="archive-item-text">${esc(a.text)}</span>
+                <span class="archive-item-date">${new Date(a.archivedAt).toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'})}</span>
+                <button class="restore-btn" onclick="restoreArchive(${a.id})" title="복원">↩ 복원</button>
+                <button class="action-btn" onclick="deleteArchive(${a.id})" title="삭제">✕</button>
+              </div>`).join('')}
+          </div>`).join('')}`;
+
+      el.innerHTML = html;
+    }
+  }
+
+  // ── Render sidebar date list ────────────────────────────
+  function renderSidebar() {
+    const dates = [...new Set(state.todos.map(t => t.date))].sort((a,b) => b.localeCompare(a));
+    const el = document.getElementById('dateList');
+    if (!dates.length) { el.innerHTML = ''; return; }
+
+    el.innerHTML = dates.map(d => {
+      const count = state.todos.filter(t => t.date === d && !t.done).length;
+      const isToday = d === todayStr();
+      return `
+        <div class="date-item ${state.currentDate === d && state.page === 'daily' ? 'active' : ''}"
+             onclick="goDate('${d}')">
+          <span>${isToday ? '오늘' : d.slice(5).replace('-','/')}</span>
+          ${count ? `<span class="badge">${count}</span>` : ''}
+        </div>`;
+    }).join('');
+  }
+
+  function goDate(date) {
+    state.page = 'daily';
+    state.currentDate = date;
+    ['today','daily','archive'].forEach(p => {
+      document.getElementById('nav-' + p).classList.toggle('active', p === 'daily');
+    });
+    document.getElementById('pageTitle').textContent = '날짜별 보기';
+    document.getElementById('dateNav').style.display = 'flex';
+    document.getElementById('datePicker').value = date;
+    render();
+  }
+
+  function render() {
+    renderSidebar();
+    renderContent();
+  }
+
+  // ── Init ───────────────────────────────────────────────
+  document.getElementById('datePicker').value = state.currentDate;
+  document.getElementById('dateNav').style.display = 'none';
+  render();
+</script>
+</body>
+</html>

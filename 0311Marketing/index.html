@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>가계부</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>가계부</h1>
+
+    <!-- 요약 카드 -->
+    <div class="summary">
+      <div class="summary-card income">
+        <span class="label">총 수입</span>
+        <span class="amount" id="total-income">0원</span>
+      </div>
+      <div class="summary-card expense">
+        <span class="label">총 지출</span>
+        <span class="amount" id="total-expense">0원</span>
+      </div>
+      <div class="summary-card balance">
+        <span class="label">잔액</span>
+        <span class="amount" id="balance">0원</span>
+      </div>
+    </div>
+
+    <!-- 입력 폼 -->
+    <div class="form-card">
+      <h2>내역 추가</h2>
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="date">날짜</label>
+          <input type="date" id="date" />
+        </div>
+        <div class="form-group">
+          <label for="type">구분</label>
+          <select id="type">
+            <option value="income">수입</option>
+            <option value="expense">지출</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="category">카테고리</label>
+          <select id="category">
+            <option value="급여">급여</option>
+            <option value="용돈">용돈</option>
+            <option value="식비">식비</option>
+            <option value="교통">교통</option>
+            <option value="쇼핑">쇼핑</option>
+            <option value="의료">의료</option>
+            <option value="문화">문화</option>
+            <option value="교육">교육</option>
+            <option value="기타">기타</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="description">항목</label>
+          <input type="text" id="description" placeholder="항목명을 입력하세요" />
+        </div>
+        <div class="form-group">
+          <label for="amount">금액 (원)</label>
+          <input type="number" id="amount" placeholder="금액을 입력하세요" min="0" />
+        </div>
+        <div class="form-group btn-group">
+          <button id="add-btn" onclick="addTransaction()">추가</button>
+        </div>
+      </div>
+      <p class="error-msg" id="error-msg"></p>
+    </div>
+
+    <!-- 필터 -->
+    <div class="filter-bar">
+      <button class="filter-btn active" data-filter="all">전체</button>
+      <button class="filter-btn" data-filter="income">수입</button>
+      <button class="filter-btn" data-filter="expense">지출</button>
+    </div>
+
+    <!-- 내역 목록 -->
+    <div class="list-card">
+      <table id="transaction-table">
+        <thead>
+          <tr>
+            <th>날짜</th>
+            <th>카테고리</th>
+            <th>항목</th>
+            <th>구분</th>
+            <th>금액</th>
+            <th>삭제</th>
+          </tr>
+        </thead>
+        <tbody id="transaction-list">
+          <!-- 항목들이 여기에 추가됩니다 -->
+        </tbody>
+      </table>
+      <p class="empty-msg" id="empty-msg">내역이 없습니다. 항목을 추가해 보세요.</p>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
